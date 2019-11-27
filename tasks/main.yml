@@ -1,0 +1,26 @@
+---
+
+# Install
+- import_tasks: install.yml
+  tags:
+    - manala_proxmox
+
+# Templates
+- import_tasks: templates.yml
+  tags:
+    - manala_proxmox
+
+# Isos
+- import_tasks: isos.yml
+  tags:
+    - manala_proxmox
+
+# Storages
+- import_tasks: storages.yml
+  tags:
+    - manala_proxmox
+
+# Instances
+- import_tasks: instances.yml
+  tags:
+    - manala_proxmox

@@ -1,0 +1,43 @@
+---
+
+- name: templates > Directory
+  file:
+    path: "{{ manala_proxmox_templates_dir }}"
+    state: directory
+  when: manala_proxmox_templates|length
+
+- name: templates > Exclusive
+  find:
+    path: "{{ manala_proxmox_templates_dir }}"
+  changed_when: false
+  register: __manala_proxmox_templates_exclusive_find
+  when: manala_proxmox_templates_exclusive
+
+- name: templates > Download
+  get_url:
+    url:  "{{ item.url }}"
+    dest: "{{ item.file }}"
+  with_items: "{{ lookup(
+      'manala_proxmox_files',
+      manala_proxmox_templates,
+      __manala_proxmox_templates_exclusive_find.files|default([]),
+      manala_proxmox_templates_dir,
+      wantlist=True,
+      wantstate='present'
+    )
+  }}"
+
+# Ansible template module does not support "state" parameter (see: https://github.com/ansible/ansible/issues/29781)
+- name: templates > Files absents
+  file:
+    path:  "{{ item.file }}"
+    state: absent
+  with_items: "{{ lookup(
+      'manala_proxmox_files',
+      manala_proxmox_templates,
+      __manala_proxmox_templates_exclusive_find.files|default([]),
+      manala_proxmox_templates_dir,
+      wantlist=True,
+      wantstate='absent'
+    )
+  }}"
